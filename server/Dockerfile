@@ -82,16 +82,6 @@ RUN apt-get install -y --no-install-recommends \
 RUN pip3 install requests \
  && pip3 install pyyaml
 
-# Set up PostGIS
-RUN wget https://download.osgeo.org/postgis/source/postgis-3.1.1.tar.gz -O postgis.tar.gz \
- && mkdir -p postgis_src \
- && tar -xvzf postgis.tar.gz --strip 1 -C postgis_src \
- && rm postgis.tar.gz \
- && cd postgis_src \
- && ./configure \
- && make -j $(nproc) \
- && make -j $(nproc) install \
- && cd .. && rm -rf postgis_src
 
 # Set up renderer user
 RUN adduser --disabled-password --gecos "" renderer
@@ -126,7 +116,6 @@ RUN mkdir -p /home/renderer/src \
  && cd ..
 
 COPY project.mml /
-COPY external-data.yml /
 
 # Configure stylesheet
 RUN mkdir -p /home/renderer/src \
@@ -156,13 +145,6 @@ COPY leaflet-demo.html /var/www/html/index.html
 RUN ln -sf /dev/stdout /var/log/apache2/access.log \
  && ln -sf /dev/stderr /var/log/apache2/error.log
 
-# Configure PosgtreSQL
-COPY postgresql.custom.conf.tmpl /etc/postgresql/12/main/
-RUN chown -R postgres:postgres /var/lib/postgresql \
- && chown postgres:postgres /etc/postgresql/12/main/postgresql.custom.conf.tmpl \
- && echo "host all all 0.0.0.0/0 md5" >> /etc/postgresql/12/main/pg_hba.conf \
- && echo "host all all ::/0 md5" >> /etc/postgresql/12/main/pg_hba.conf
-
 # Copy update scripts
 COPY openstreetmap-tiles-update-expire /usr/bin/
 RUN chmod +x /usr/bin/openstreetmap-tiles-update-expire \
@@ -185,4 +167,4 @@ COPY run.sh /
 ENTRYPOINT ["/run.sh"]
 CMD []
 
-EXPOSE 80 5432
+EXPOSE 80
