@@ -125,6 +125,9 @@ RUN mkdir -p /home/renderer/src \
  && ldconfig \
  && cd ..
 
+COPY project.mml /
+COPY external-data.yml /
+
 # Configure stylesheet
 RUN mkdir -p /home/renderer/src \
  && cd /home/renderer/src \
@@ -132,6 +135,7 @@ RUN mkdir -p /home/renderer/src \
  && cd openstreetmap-carto \
  && rm -rf .git \
  && npm install -g carto@0.18.2 \
+ && cat /project.mml > project.mml \
  && carto project.mml > mapnik.xml
 
 # Configure renderd
