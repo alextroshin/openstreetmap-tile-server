@@ -82,16 +82,6 @@ RUN apt-get install -y --no-install-recommends \
 RUN pip3 install requests \
  && pip3 install pyyaml
 
-# Set up PostGIS
-RUN wget https://download.osgeo.org/postgis/source/postgis-3.1.1.tar.gz -O postgis.tar.gz \
- && mkdir -p postgis_src \
- && tar -xvzf postgis.tar.gz --strip 1 -C postgis_src \
- && rm postgis.tar.gz \
- && cd postgis_src \
- && ./configure \
- && make -j $(nproc) \
- && make -j $(nproc) install \
- && cd .. && rm -rf postgis_src
 
 # Set up renderer user
 RUN adduser --disabled-password --gecos "" renderer
@@ -143,25 +133,6 @@ RUN sed -i 's/renderaccount/renderer/g' /usr/local/etc/renderd.conf \
  && sed -i 's/\/truetype//g' /usr/local/etc/renderd.conf \
  && sed -i 's/hot/tile/g' /usr/local/etc/renderd.conf
 
-# Configure Apache
-RUN mkdir /var/lib/mod_tile \
- && chown renderer /var/lib/mod_tile \
- && mkdir /var/run/renderd \
- && chown renderer /var/run/renderd \
- && echo "LoadModule tile_module /usr/lib/apache2/modules/mod_tile.so" >> /etc/apache2/conf-available/mod_tile.conf \
- && echo "LoadModule headers_module /usr/lib/apache2/modules/mod_headers.so" >> /etc/apache2/conf-available/mod_headers.conf \
- && a2enconf mod_tile && a2enconf mod_headers
-COPY apache.conf /etc/apache2/sites-available/000-default.conf
-COPY leaflet-demo.html /var/www/html/index.html
-RUN ln -sf /dev/stdout /var/log/apache2/access.log \
- && ln -sf /dev/stderr /var/log/apache2/error.log
-
-# Configure PosgtreSQL
-COPY postgresql.custom.conf.tmpl /etc/postgresql/12/main/
-RUN chown -R postgres:postgres /var/lib/postgresql \
- && chown postgres:postgres /etc/postgresql/12/main/postgresql.custom.conf.tmpl \
- && echo "host all all 0.0.0.0/0 md5" >> /etc/postgresql/12/main/pg_hba.conf \
- && echo "host all all ::/0 md5" >> /etc/postgresql/12/main/pg_hba.conf
 
 # Copy update scripts
 COPY openstreetmap-tiles-update-expire /usr/bin/
