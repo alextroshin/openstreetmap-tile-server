@@ -146,12 +146,12 @@ RUN ln -sf /dev/stdout /var/log/apache2/access.log \
  && ln -sf /dev/stderr /var/log/apache2/error.log
 
 # Copy update scripts
-COPY openstreetmap-tiles-update-expire /usr/bin/
-RUN chmod +x /usr/bin/openstreetmap-tiles-update-expire \
- && mkdir /var/log/tiles \
- && chmod a+rw /var/log/tiles \
- && ln -s /home/renderer/src/mod_tile/osmosis-db_replag /usr/bin/osmosis-db_replag \
- && echo "*  *    * * *   renderer    openstreetmap-tiles-update-expire\n" >> /etc/crontab
+#COPY openstreetmap-tiles-update-expire /usr/bin/
+#RUN chmod +x /usr/bin/openstreetmap-tiles-update-expire \
+# && mkdir /var/log/tiles \
+# && chmod a+rw /var/log/tiles \
+# && ln -s /home/renderer/src/mod_tile/osmosis-db_replag /usr/bin/osmosis-db_replag \
+# && echo "*  *    * * *   renderer    openstreetmap-tiles-update-expire\n" >> /etc/crontab
 
 # Install trim_osc.py helper script
 RUN mkdir -p /home/renderer/src \

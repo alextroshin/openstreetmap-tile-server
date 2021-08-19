@@ -17,10 +17,10 @@ if [ "$1" = "run" ]; then
     # Configure renderd threads
     sed -i -E "s/num_threads=[0-9]+/num_threads=${THREADS:-4}/g" /usr/local/etc/renderd.conf
 
-    # start cron job to trigger consecutive updates
-    if [ "$UPDATES" = "enabled" ] || [ "$UPDATES" = "1" ]; then
-      /etc/init.d/cron start
-    fi
+#    # start cron job to trigger consecutive updates
+#    if [ "$UPDATES" = "enabled" ] || [ "$UPDATES" = "1" ]; then
+#      /etc/init.d/cron start
+#    fi
 
     # Run while handling docker stop's SIGTERM
     stop_handler() {
