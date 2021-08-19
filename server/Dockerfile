@@ -123,9 +123,9 @@ RUN mkdir -p /home/renderer/src \
  && git clone --single-branch --branch v5.3.1 https://github.com/gravitystorm/openstreetmap-carto.git --depth 1 \
  && cd openstreetmap-carto \
  && rm -rf .git \
- && npm install -g carto@0.18.2 \
- && cat /project.mml > project.mml \
- && carto project.mml > mapnik.xml
+ && npm install -g carto@0.18.2
+# && cat /project_formatted.mml > project.mml \
+# && carto project.mml > mapnik.xml
 
 # Configure renderd
 RUN sed -i 's/renderaccount/renderer/g' /usr/local/etc/renderd.conf \
@@ -155,6 +155,7 @@ RUN mkdir -p /home/renderer/src \
  && chmod u+x /home/renderer/src/regional/trim_osc.py
 
 # Start running
+COPY reconfigure_stylesheet.sh /
 COPY run.sh /
 ENTRYPOINT ["/run.sh"]
 CMD []

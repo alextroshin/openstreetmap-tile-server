@@ -4,6 +4,7 @@ set -x
 
 
 if [ "$1" = "run" ]; then
+    ./reconfigure_stylesheet.sh
     # Clean /tmp
     rm -rf /tmp/*
 
