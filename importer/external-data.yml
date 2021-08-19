@@ -2,11 +2,11 @@ settings:
   temp_schema: loading
   schema: public
   data_dir: data
-  database: gis
-  host: 192.168.181.224
-  port: 15433
-  username: renderer
-  password: "1234"
+  database: ${DATABASE_NAME}
+  host: ${DATABASE_HOST}
+  port: ${DATABASE_PORT}
+  username: ${DATABASE_USER}
+  password: ${DATABASE_PASS}
   metadata_table: external_data
 sources:
   simplified_water_polygons:

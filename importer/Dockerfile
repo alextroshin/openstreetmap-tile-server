@@ -25,7 +25,6 @@ RUN apt-get install -y --no-install-recommends \
   build-essential \
   bzip2 \
   cmake \
-  cron \
   fonts-noto-cjk \
   fonts-noto-hinted \
   fonts-noto-unhinted \
@@ -135,12 +134,12 @@ RUN sed -i 's/renderaccount/renderer/g' /usr/local/etc/renderd.conf \
 
 
 # Copy update scripts
-COPY openstreetmap-tiles-update-expire /usr/bin/
-RUN chmod +x /usr/bin/openstreetmap-tiles-update-expire \
- && mkdir /var/log/tiles \
- && chmod a+rw /var/log/tiles \
- && ln -s /home/renderer/src/mod_tile/osmosis-db_replag /usr/bin/osmosis-db_replag \
- && echo "*  *    * * *   renderer    openstreetmap-tiles-update-expire\n" >> /etc/crontab
+#COPY openstreetmap-tiles-update-expire /usr/bin/
+#RUN chmod +x /usr/bin/openstreetmap-tiles-update-expire \
+# && mkdir /var/log/tiles \
+# && chmod a+rw /var/log/tiles \
+# && ln -s /home/renderer/src/mod_tile/osmosis-db_replag /usr/bin/osmosis-db_replag \
+# && echo "*  *    * * *   renderer    openstreetmap-tiles-update-expire\n" >> /etc/crontab
 
 # Install trim_osc.py helper script
 RUN mkdir -p /home/renderer/src \
@@ -152,6 +151,7 @@ RUN mkdir -p /home/renderer/src \
  && chmod u+x /home/renderer/src/regional/trim_osc.py
 
 # Start running
+COPY patch_external_data.sh /
 COPY run.sh /
 ENTRYPOINT ["/run.sh"]
 CMD []

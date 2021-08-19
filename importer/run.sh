@@ -1,9 +1,5 @@
 #!/bin/bash
-
 set -x
-
-echo '192.168.181.224:15433:*:postgres:example' >> ~/.pgpass
-cat ~/.pgpass
 
 if [ "$1" = "import" ]; then
 
@@ -30,14 +26,15 @@ if [ "$1" = "import" ]; then
     fi
 
     # Import data
-    sudo -u renderer PGPASSWORD=1234 osm2pgsql -H 192.168.181.224 -P 15433 -d gis --create --slim -G --hstore --tag-transform-script /home/renderer/src/openstreetmap-carto/openstreetmap-carto.lua --number-processes ${THREADS:-4} -S /home/renderer/src/openstreetmap-carto/openstreetmap-carto.style /data.osm.pbf ${OSM2PGSQL_EXTRA_ARGS}
+    sudo -u ${DATABASE_USER} PGPASSWORD=${DATABASE_PASS} osm2pgsql -H ${DATABASE_HOST} -P ${DATABASE_PORT} -d ${DATABASE_NAME} --create --slim -G --hstore --tag-transform-script /home/renderer/src/openstreetmap-carto/openstreetmap-carto.lua --number-processes ${THREADS:-4} -S /home/renderer/src/openstreetmap-carto/openstreetmap-carto.style /data.osm.pbf ${OSM2PGSQL_EXTRA_ARGS}
 
     # Create indexes
-    sudo -u postgres PGPASSWORD=example psql -h 192.168.181.224 -p 15433 -d gis -f /home/renderer/src/openstreetmap-carto/indexes.sql
+    sudo -u ${DATABASE_USER} PGPASSWORD=${DATABASE_PASS} psql -h ${DATABASE_HOST} -p ${DATABASE_PORT} -d ${DATABASE_NAME} -f /home/renderer/src/openstreetmap-carto/indexes.sql
 
     #Import external data
+    ./patch_external_data.sh
     sudo chown -R renderer: /home/renderer/src
-    sudo -u renderer python3 /home/renderer/src/openstreetmap-carto/scripts/get-external-data.py -c /external-data.yml -D /home/renderer/src/openstreetmap-carto/data
+    sudo -u renderer python3 /home/renderer/src/openstreetmap-carto/scripts/get-external-data.py -c /external-data_patched.yml -D /home/renderer/src/openstreetmap-carto/data
 
     exit 0
 fi
